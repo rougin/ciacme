@@ -5,6 +5,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 use Rougin\SparkPlug\Controller;
 use Rougin\Wildfire\Wildfire;
 
+/**
+ * @property \User $user
+ */
 class Users extends Controller
 {
     /**
@@ -32,6 +35,10 @@ class Users extends Controller
         // ------------------------------------
 
         // Show if --with-view enabled ---
+        $this->load->helper('form');
+
+        $this->load->library('session');
+
         $this->load->helper('url');
         // -------------------------------
 
@@ -43,13 +50,46 @@ class Users extends Controller
     /**
      * @return void
      */
+    public function create()
+    {
+        $data = array('table' => $this->table);
+
+        if ($input = $this->input->post(null, true))
+        {
+            $exists = $this->user->exists($input);
+
+            $valid = $this->user->validate($input);
+
+            if ($valid && ! $exists)
+            {
+                $this->user->create($input);
+
+                $text = 'User has been successfully created!';
+
+                $this->session->set_flashdata('alert', $text);
+
+                redirect('users');
+            }
+        }
+
+        $this->load->view('users/create', $data);
+    }
+
+    /**
+     * @return void
+     */
     public function index()
     {
+        $data = array('table' => $this->table);
+
         $query = $this->query->get($this->table);
 
-        $data = array('items' => $query->result());
+        $data['items'] = $query->result();
 
-        $data['table'] = $this->table;
+        if ($alert = $this->session->flashdata('alert'))
+        {
+            $data['alert'] = $alert;
+        }
 
         // Show if --with-view enabled ---------
         $this->load->view('users/index', $data);
