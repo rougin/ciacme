@@ -1,10 +1,13 @@
 <?php
 
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 use Rougin\Wildfire\Model;
 use Rougin\Wildfire\Traits\ValidateTrait;
 
+/**
+ * @property \CI_DB $db
+ */
 class User extends Model
 {
     use ValidateTrait;
@@ -51,6 +54,14 @@ class User extends Model
      */
     public function exists($data)
     {
-        return false;
+        // Should be defined manually ------------
+        $this->db->from($this->table);
+
+        $this->db->where('email', $data['email']);
+
+        $count = $this->db->count_all_results();
+        // ---------------------------------------
+
+        return $count > 0;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 use Rougin\SparkPlug\Controller;
 use Rougin\Wildfire\Wildfire;
@@ -54,22 +54,34 @@ class Users extends Controller
     {
         $data = array('table' => $this->table);
 
-        if ($input = $this->input->post(null, true))
+        /** @var array<string, mixed> */
+        $input = $this->input->post(null, true);
+
+        if (! $input)
         {
-            $exists = $this->user->exists($input);
+            $this->load->view('users/create', $data);
 
-            $valid = $this->user->validate($input);
+            return;
+        }
 
-            if ($valid && ! $exists)
-            {
-                $this->user->create($input);
+        $exists = $this->user->exists($input);
 
-                $text = 'User has been successfully created!';
+        $valid = $this->user->validate($input);
 
-                $this->session->set_flashdata('alert', $text);
+        if ($exists)
+        {
+            $data['alert'] = 'Email already exists.';
+        }
 
-                redirect('users');
-            }
+        if ($valid && ! $exists)
+        {
+            $this->user->create($input);
+
+            $text = 'User has been successfully created!';
+
+            $this->session->set_flashdata('alert', $text);
+
+            redirect('users');
         }
 
         $this->load->view('users/create', $data);
