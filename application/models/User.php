@@ -6,11 +6,19 @@ use Rougin\Wildfire\Model;
 use Rougin\Wildfire\Traits\ValidateTrait;
 
 /**
- * @property \CI_DB $db
+ * @property \CI_DB_query_builder $db
  */
 class User extends Model
 {
     use ValidateTrait;
+
+    /**
+     * NOTE: Set to "true" if "--timestamps" is specified.
+     * TODO: Add this to Credo, Wildfire.
+     *
+     * @var boolean
+     */
+    protected $timestamps = true;
 
     /**
      * @var array<string, string>[]
@@ -40,11 +48,14 @@ class User extends Model
         $input['email'] = $data['email'];
         // ----------------------------------------
 
-        // Show if --timestamps is enabled --------
-        $input['created_at'] = date('Y-m-d H:i:s');
-        // ----------------------------------------
+        if ($this->timestamps)
+        {
+            $input['created_at'] = date('Y-m-d H:i:s');
+        }
 
-        $this->db->insert($this->table, $data);
+        $table = $this->table;
+
+        return $this->db->insert($table, $data);
     }
 
     /**
@@ -63,5 +74,15 @@ class User extends Model
         // ---------------------------------------
 
         return $count > 0;
+    }
+
+    /**
+     * @param array<string, mixed> $input
+     *
+     * @return boolean
+     */
+    public function is_valid($input)
+    {
+        return $this->validate($input);
     }
 }

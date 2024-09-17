@@ -6,7 +6,8 @@ use Rougin\SparkPlug\Controller;
 use Rougin\Wildfire\Wildfire;
 
 /**
- * @property \User $user
+ * @property \CI_DB_query_builder $db
+ * @property \User                $user
  */
 class Users extends Controller
 {
@@ -66,7 +67,7 @@ class Users extends Controller
 
         $exists = $this->user->exists($input);
 
-        $valid = $this->user->validate($input);
+        $valid = $this->user->is_valid($input);
 
         if ($exists)
         {
@@ -85,6 +86,15 @@ class Users extends Controller
         }
 
         $this->load->view('users/create', $data);
+    }
+
+    /**
+     * @param integer $id
+     *
+     * @return void
+     */
+    public function edit($id)
+    {
     }
 
     /**
