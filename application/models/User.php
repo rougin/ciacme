@@ -4,13 +4,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 use Rougin\Wildfire\Model;
 use Rougin\Wildfire\Traits\ValidateTrait;
+use Rougin\Wildfire\Traits\WildfireTrait;
 
 /**
  * @property \CI_DB_query_builder $db
  */
 class User extends Model
 {
-    use ValidateTrait;
+    use ValidateTrait, WildfireTrait;
 
     /**
      * NOTE: Set to "true" if "--timestamps" is specified.

@@ -16,11 +16,6 @@ class Users extends Controller
      */
     private $table = 'users';
 
-    /**
-     * @var \Rougin\Wildfire\Wildfire
-     */
-    private $query;
-
     public function __construct()
     {
         parent::__construct();
@@ -31,8 +26,6 @@ class Users extends Controller
         $this->load->database();
 
         $wildfire = new Wildfire($this->db);
-
-        $this->query = $wildfire;
         // ------------------------------------
 
         // Show if --with-view enabled ---
@@ -45,6 +38,8 @@ class Users extends Controller
 
         // Load multiple models if required ---
         $this->load->model('user');
+
+        $this->user->wildfire($wildfire);
         // ------------------------------------
     }
 
@@ -95,6 +90,22 @@ class Users extends Controller
      */
     public function edit($id)
     {
+        $item = $this->user->find($id);
+
+        if (! $item)
+        {
+            $text = 'User not found';
+
+            $this->session->set_flashdata('alert', $text);
+
+            redirect('users');
+        }
+
+        $data = array('item' => $item);
+
+        // Show if --with-view enabled --------
+        $this->load->view('users/edit', $data);
+        // ------------------------------------
     }
 
     /**
@@ -104,9 +115,9 @@ class Users extends Controller
     {
         $data = array('table' => $this->table);
 
-        $query = $this->query->get($this->table);
+        $items = $this->user->get();
 
-        $data['items'] = $query->result();
+        $data['items'] = $items->result();
 
         if ($alert = $this->session->flashdata('alert'))
         {
