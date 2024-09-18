@@ -1,6 +1,7 @@
 <h1>Update User</h1>
 
 <?= form_open('users/edit/' . $item->id) ?>
+  <?= form_hidden('_method', 'PUT') ?>
   <div>
     <?= form_label('Name') ?>
     <?= form_input('name', set_value('name', $item->name)) ?>

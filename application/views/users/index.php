@@ -26,6 +26,7 @@
             </span>
             <span>
               <?= form_open('users/delete/' . $item->id) ?>
+                <?= form_hidden('_method', 'DELETE') ?>
                 <a href="javascript:void(0)" onclick="trash(this.parentElement)">Delete</a>
               <?= form_close() ?>
             </span>

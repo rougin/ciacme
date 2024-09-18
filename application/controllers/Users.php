@@ -92,15 +92,9 @@ class Users extends Controller
      */
     public function edit($id)
     {
-        $item = $this->user->find($id);
-
-        if (! $item)
+        if (! $item = $this->user->find($id))
         {
-            $text = 'User not found';
-
-            $this->session->set_flashdata('alert', $text);
-
-            redirect('users');
+            show_404();
         }
 
         $data = array('item' => $item);
@@ -114,6 +108,15 @@ class Users extends Controller
 
             return;
         }
+
+        // Show 404 page if not using "PUT" method ---
+        $method = $this->input->post('_method', true);
+
+        if ($method !== 'PUT')
+        {
+            show_404();
+        }
+        // -------------------------------------------
 
         $exists = $this->user->exists($input, $id);
 
@@ -147,18 +150,18 @@ class Users extends Controller
      */
     public function delete($id)
     {
-        $item = $this->user->find($id);
+        // Show 404 page if not using "DELETE" method -------
+        $method = $this->input->post('_method', true);
 
-        if ($item)
+        if ($method !== 'DELETE' || ! $this->user->find($id))
         {
-            $this->user->delete($id);
+            show_404();
+        }
+        // --------------------------------------------------
 
-            $text = 'User successfully deleted!';
-        }
-        else
-        {
-            $text = 'User not found';
-        }
+        $this->user->delete($id);
+
+        $text = 'User successfully deleted!';
 
         $this->session->set_flashdata('alert', $text);
 
