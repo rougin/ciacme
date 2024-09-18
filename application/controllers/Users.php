@@ -7,6 +7,8 @@ use Rougin\Wildfire\Wildfire;
 
 /**
  * @property \CI_DB_query_builder $db
+ * @property \CI_Input            $input
+ * @property \CI_Session          $session
  * @property \User                $user
  */
 class Users extends Controller
@@ -102,6 +104,36 @@ class Users extends Controller
         }
 
         $data = array('item' => $item);
+
+        /** @var array<string, mixed> */
+        $input = $this->input->post(null, true);
+
+        if (! $input)
+        {
+            $this->load->view('users/edit', $data);
+
+            return;
+        }
+
+        $exists = $this->user->exists($input, $id);
+
+        $valid = $this->user->is_valid($input);
+
+        if ($exists)
+        {
+            $data['alert'] = 'Email already exists.';
+        }
+
+        if ($valid && ! $exists)
+        {
+            // $this->user->create($input);
+
+            $text = 'User has been successfully updated!';
+
+            $this->session->set_flashdata('alert', $text);
+
+            redirect('users');
+        }
 
         // Show if --with-view enabled --------
         $this->load->view('users/edit', $data);

@@ -61,15 +61,21 @@ class User extends Model
 
     /**
      * @param array<string, mixed> $data
+     * @param integer|null         $id
      *
      * @return boolean
      */
-    public function exists($data)
+    public function exists($data, $id = null)
     {
         // Should be defined manually ------------
         $this->db->from($this->table);
 
         $this->db->where('email', $data['email']);
+
+        if ($id)
+        {
+            $this->db->where_not_in('id', [$id]);
+        }
 
         $count = $this->db->count_all_results();
         // ---------------------------------------
