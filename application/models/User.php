@@ -3,6 +3,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 use Rougin\Wildfire\Model;
+use Rougin\Wildfire\Traits\PaginateTrait;
 use Rougin\Wildfire\Traits\ValidateTrait;
 use Rougin\Wildfire\Traits\WildfireTrait;
 
@@ -11,17 +12,29 @@ use Rougin\Wildfire\Traits\WildfireTrait;
  */
 class User extends Model
 {
-    use ValidateTrait, WildfireTrait;
+    use PaginateTrait;
+    use ValidateTrait;
+    use WildfireTrait;
 
     /**
-     * NOTE: Set to "true" if "--timestamps" is specified.
-     * TODO: Add this to Credo, Wildfire.
+     * TODO: Add to Credo, Wildfire.
+     * Additional configuration to Pagination Class.
      *
-     * @var boolean
+     * @link https://codeigniter.com/userguide3/libraries/pagination.html?highlight=pagination#customizing-the-pagination
+     *
+     * @var array<string, mixed>
      */
-    protected $timestamps = true;
+    protected $pagee = array(
+        'page_query_string' => true,
+        'use_page_numbers' => true,
+        'query_string_segment' => 'p',
+        'reuse_query_string' => true,
+    );
 
     /**
+     * An array of validation rules. This needs to be the same format
+     * as validation rules passed to the Form Validation library.
+     *
      * @link https://codeigniter.com/userguide3/libraries/form_validation.html#setting-rules-using-an-array
      *
      * @var array<string, string>[]
@@ -32,11 +45,23 @@ class User extends Model
     );
 
     /**
+     * The table associated with the model.
+     *
      * @var string
      */
     protected $table = 'users';
 
     /**
+     * NOTE: Set to "true" if "--timestamps" is specified.
+     * TODO: Add this to Credo, Wildfire.
+     *
+     * @var boolean
+     */
+    protected $timestamps = true;
+
+    /**
+     * TODO: Add to Credo, Wildfire.
+     *
      * @param array<string, mixed> $data
      *
      * @return boolean
@@ -56,6 +81,8 @@ class User extends Model
     }
 
     /**
+     * TODO: Add to Credo, Wildfire.
+     *
      * @param array<string, mixed> $data
      * @param integer|null         $id
      *
@@ -80,7 +107,10 @@ class User extends Model
     }
 
     /**
-     * @param  boolean $id
+     * TODO: Add to Credo, Wildfire.
+     *
+     * @param integer $id
+     *
      * @return boolean
      */
     public function delete($id)
@@ -93,6 +123,8 @@ class User extends Model
     }
 
     /**
+     * TODO: Add to Credo, Wildfire.
+     *
      * @return integer
      */
     public function total()
@@ -101,6 +133,8 @@ class User extends Model
     }
 
     /**
+     * TODO: Add to Credo, Wildfire.
+     *
      * @param integer              $id
      * @param array<string, mixed> $data
      *
@@ -121,6 +155,8 @@ class User extends Model
     }
 
     /**
+     * TODO: Add to Credo, Wildfire.
+     *
      * @param array<string, mixed> $data
      * @param integer|null         $id
      *

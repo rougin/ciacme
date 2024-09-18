@@ -183,9 +183,15 @@ class Users extends Controller
      */
     public function index()
     {
-        $data = array('table' => $this->table);
+        $total = (int) $this->user->total();
 
-        $items = $this->user->get();
+        $limit = $this->input->get('l', true) ?? 5;
+
+        $result = $this->user->paginate($limit, $total);
+
+        $data = array('links' => $result[1]);
+
+        $items = $this->user->get($limit, (int) $result[0]);
 
         $data['items'] = $items->result();
 

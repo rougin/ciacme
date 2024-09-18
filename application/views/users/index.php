@@ -35,6 +35,8 @@
       <?php endforeach ?>
     </tbody>
   </table>
+
+  <?= $links ?>
 </div>
 
 <script>
