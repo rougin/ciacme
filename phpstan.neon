@@ -1,0 +1,10 @@
+parameters:
+  level: 9
+  paths:
+    - application/controllers
+    - application/models
+  scanDirectories:
+    - system
+  excludePaths:
+    analyse:
+      - application/controllers/Welcome.php
