@@ -3,7 +3,6 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 use Rougin\SparkPlug\Controller;
-use Rougin\Wildfire\Wildfire;
 
 /**
  * Sample CI Controller using Wildfire.
@@ -16,10 +15,22 @@ use Rougin\Wildfire\Wildfire;
 class Users extends Controller
 {
     /**
+     * Table associated with the controller.
+     *
      * @var string
      */
     private $table = 'users';
 
+    /**
+     * Number of items to show per page.
+     *
+     * @var integer
+     */
+    private $limit = 10;
+
+    /**
+     * Loads the helpers, libraries, and models.
+     */
     public function __construct()
     {
         parent::__construct();
@@ -28,8 +39,6 @@ class Users extends Controller
         $this->load->helper('inflector');
 
         $this->load->database();
-
-        $wildfire = new Wildfire($this->db);
         // ------------------------------------
 
         // Show if --with-view enabled ----
@@ -44,12 +53,13 @@ class Users extends Controller
 
         // Load multiple models if required ---
         $this->load->model('user');
-
-        $this->user->wildfire($wildfire);
         // ------------------------------------
     }
 
     /**
+     * Returns the form page for creating a user.
+     * Creates a new user if receiving payload.
+     *
      * @return void
      */
     public function create()
@@ -92,6 +102,9 @@ class Users extends Controller
     }
 
     /**
+     * Returns the form page for updating a user.
+     * Updates the specified user if receiving payload.
+     *
      * @param integer $id
      *
      * @return void
@@ -154,6 +167,8 @@ class Users extends Controller
     }
 
     /**
+     * Deletes the specified user.
+     *
      * @param integer $id
      *
      * @return void
@@ -179,19 +194,19 @@ class Users extends Controller
     }
 
     /**
+     * Returns the list of paginated users.
+     *
      * @return void
      */
     public function index()
     {
         $total = (int) $this->user->total();
 
-        $limit = $this->input->get('l', true) ?? 5;
-
-        $result = $this->user->paginate($limit, $total);
+        $result = $this->user->paginate($this->limit, $total);
 
         $data = array('links' => $result[1]);
 
-        $items = $this->user->get($limit, (int) $result[0]);
+        $items = $this->user->get($this->limit, (int) $result[0]);
 
         $data['items'] = $items->result();
 
