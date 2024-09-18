@@ -13,7 +13,7 @@
     <?= form_error('email', '<div><span>', '</span></div>') ?>
   </div>
 
-  <div><?= isset($alert) ? $alert : '' ?></div>
+  <div><?= isset($error) ? $error : '' ?></div>
 
   <?= anchor('users', 'Cancel') ?>
   <?= form_submit(null, 'Create') ?>

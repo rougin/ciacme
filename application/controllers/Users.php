@@ -6,6 +6,8 @@ use Rougin\SparkPlug\Controller;
 use Rougin\Wildfire\Wildfire;
 
 /**
+ * Sample CI Controller using Wildfire.
+ *
  * @property \CI_DB_query_builder $db
  * @property \CI_Input            $input
  * @property \CI_Session          $session
@@ -30,13 +32,15 @@ class Users extends Controller
         $wildfire = new Wildfire($this->db);
         // ------------------------------------
 
-        // Show if --with-view enabled ---
+        // Show if --with-view enabled ----
         $this->load->helper('form');
 
-        $this->load->library('session');
-
         $this->load->helper('url');
-        // -------------------------------
+
+        $this->load->library('pagination');
+
+        $this->load->library('session');
+        // --------------------------------
 
         // Load multiple models if required ---
         $this->load->model('user');
@@ -64,18 +68,20 @@ class Users extends Controller
 
         $exists = $this->user->exists($input);
 
-        $valid = $this->user->validate($input);
-
+        // Specify logic here if applicable ---------
         if ($exists)
         {
-            $data['alert'] = 'Email already exists.';
+            $data['error'] = 'Email already exists.';
         }
+        // ------------------------------------------
+
+        $valid = $this->user->validate($input);
 
         if ($valid && ! $exists)
         {
             $this->user->create($input);
 
-            $text = 'User has been successfully created!';
+            $text = 'Item successfully created!';
 
             $this->session->set_flashdata('alert', $text);
 
@@ -99,6 +105,7 @@ class Users extends Controller
 
         $data = array('item' => $item);
 
+        // Skip if provided empty input -----------
         /** @var array<string, mixed> */
         $input = $this->input->post(null, true);
 
@@ -108,6 +115,7 @@ class Users extends Controller
 
             return;
         }
+        // ----------------------------------------
 
         // Show 404 page if not using "PUT" method ---
         $method = $this->input->post('_method', true);
@@ -120,18 +128,20 @@ class Users extends Controller
 
         $exists = $this->user->exists($input, $id);
 
-        $valid = $this->user->validate($input);
-
+        // Specify logic here if applicable ---------
         if ($exists)
         {
-            $data['alert'] = 'Email already exists.';
+            $data['error'] = 'Email already exists.';
         }
+        // ------------------------------------------
+
+        $valid = $this->user->validate($input);
 
         if ($valid && ! $exists)
         {
             $this->user->update($id, $input);
 
-            $text = 'User has been successfully updated!';
+            $text = 'Item successfully updated!';
 
             $this->session->set_flashdata('alert', $text);
 
@@ -161,7 +171,7 @@ class Users extends Controller
 
         $this->user->delete($id);
 
-        $text = 'User successfully deleted!';
+        $text = 'Item successfully deleted!';
 
         $this->session->set_flashdata('alert', $text);
 

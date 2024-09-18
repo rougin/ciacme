@@ -22,6 +22,8 @@ class User extends Model
     protected $timestamps = true;
 
     /**
+     * @link https://codeigniter.com/userguide3/libraries/form_validation.html#setting-rules-using-an-array
+     *
      * @var array<string, string>[]
      */
     protected $rules = array(
@@ -61,7 +63,7 @@ class User extends Model
      */
     public function exists($data, $id = null)
     {
-        // Should be defined manually ------------
+        // Specify logic here if applicable ------
         $this->db->from($this->table);
 
         $this->db->where('email', $data['email']);
@@ -91,6 +93,14 @@ class User extends Model
     }
 
     /**
+     * @return integer
+     */
+    public function total()
+    {
+        return $this->db->from($this->table)->count_all_results();
+    }
+
+    /**
      * @param integer              $id
      * @param array<string, mixed> $data
      *
@@ -105,11 +115,9 @@ class User extends Model
             $input['updated_at'] = date('Y-m-d H:i:s');
         }
 
-        $id = array('id' => $id);
+        $this->db->where($this->primary, $id);
 
-        $table = $this->table;
-
-        return $this->db->update($table, $input, $id);
+        return $this->db->update($this->table, $input);
     }
 
     /**
@@ -120,14 +128,14 @@ class User extends Model
      */
     protected function payload($data, $id = null)
     {
-        $load = array();
+        $input = array();
 
         // List the specified fields from table ---
-        $load['name'] = $data['name'];
+        $input['name'] = $data['name'];
 
-        $load['email'] = $data['email'];
+        $input['email'] = $data['email'];
         // ----------------------------------------
 
-        return $load;
+        return $input;
     }
 }
