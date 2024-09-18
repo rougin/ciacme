@@ -41,13 +41,7 @@ class User extends Model
      */
     public function create($data)
     {
-        $input = array();
-
-        // List the specified fields from table ---
-        $input['name'] = $data['name'];
-
-        $input['email'] = $data['email'];
-        // ----------------------------------------
+        $input = $this->payload($data);
 
         if ($this->timestamps)
         {
@@ -56,7 +50,7 @@ class User extends Model
 
         $table = $this->table;
 
-        return $this->db->insert($table, $data);
+        return $this->db->insert($table, $input);
     }
 
     /**
@@ -84,12 +78,56 @@ class User extends Model
     }
 
     /**
-     * @param array<string, mixed> $input
+     * @param  boolean $id
+     * @return boolean
+     */
+    public function delete($id)
+    {
+        $this->db->where($this->primary, $id);
+
+        $result = $this->db->delete($this->table);
+
+        return $result ? true : false;
+    }
+
+    /**
+     * @param integer              $id
+     * @param array<string, mixed> $data
      *
      * @return boolean
      */
-    public function is_valid($input)
+    public function update($id, $data)
     {
-        return $this->validate($input);
+        $input = $this->payload($data);
+
+        if ($this->timestamps)
+        {
+            $input['updated_at'] = date('Y-m-d H:i:s');
+        }
+
+        $id = array('id' => $id);
+
+        $table = $this->table;
+
+        return $this->db->update($table, $input, $id);
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     * @param integer|null         $id
+     *
+     * @return array<string, mixed>
+     */
+    protected function payload($data, $id = null)
+    {
+        $load = array();
+
+        // List the specified fields from table ---
+        $load['name'] = $data['name'];
+
+        $load['email'] = $data['email'];
+        // ----------------------------------------
+
+        return $load;
     }
 }

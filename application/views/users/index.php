@@ -21,8 +21,14 @@
           <td><?= $item->name; ?></td>
           <td><?= $item->email; ?></td>
           <td>
-            <a href="<?= base_url('users/edit/' . $item->id) ?>">Edit</a>
-            <a href="javascript:void(0)" onclick="remove(<?= $item->id ?>)">Delete</a>
+            <span>
+              <a href="<?= base_url('users/edit/' . $item->id) ?>">Edit</a>
+            </span>
+            <span>
+              <?= form_open('users/delete/' . $item->id) ?>
+                <a href="javascript:void(0)" onclick="trash(this.parentElement)">Delete</a>
+              <?= form_close() ?>
+            </span>
           </td>
         </tr>
       <?php endforeach ?>
@@ -31,8 +37,13 @@
 </div>
 
 <script>
-  remove = function (id)
+  trash = function (self)
   {
-    console.log('users', id)
+    const text = 'Do you want to delete the selected user?'
+
+    if (confirm(text))
+    {
+      self.submit()
+    }
   }
 </script>

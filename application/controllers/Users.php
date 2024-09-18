@@ -64,7 +64,7 @@ class Users extends Controller
 
         $exists = $this->user->exists($input);
 
-        $valid = $this->user->is_valid($input);
+        $valid = $this->user->validate($input);
 
         if ($exists)
         {
@@ -117,7 +117,7 @@ class Users extends Controller
 
         $exists = $this->user->exists($input, $id);
 
-        $valid = $this->user->is_valid($input);
+        $valid = $this->user->validate($input);
 
         if ($exists)
         {
@@ -126,7 +126,7 @@ class Users extends Controller
 
         if ($valid && ! $exists)
         {
-            // $this->user->create($input);
+            $this->user->update($id, $input);
 
             $text = 'User has been successfully updated!';
 
@@ -138,6 +138,31 @@ class Users extends Controller
         // Show if --with-view enabled --------
         $this->load->view('users/edit', $data);
         // ------------------------------------
+    }
+
+    /**
+     * @param integer $id
+     *
+     * @return void
+     */
+    public function delete($id)
+    {
+        $item = $this->user->find($id);
+
+        if ($item)
+        {
+            $this->user->delete($id);
+
+            $text = 'User successfully deleted!';
+        }
+        else
+        {
+            $text = 'User not found';
+        }
+
+        $this->session->set_flashdata('alert', $text);
+
+        redirect('users');
     }
 
     /**
