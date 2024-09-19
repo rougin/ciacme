@@ -18,28 +18,18 @@ class User_repository extends Repository
 
     /**
      * @param array<string, mixed> $data
-     * @param integer|null         $id
      *
-     * @return boolean
+     * @return void
      */
-    public function exists($data, $id = null)
+    public function create($data)
     {
-        // Specify logic here if applicable --------
-        $qb = $this->createQueryBuilder('u')
-            ->andWhere('u.email = :email')
-            ->setParameter('email', $data['email']);
+        $model = new User;
 
-        if ($id)
-        {
-            $qb = $qb->andWhere('u.id != :id')
-                ->setParameter('id', $id);
-        }
+        $model = $this->load($data, $model);
 
-        /** @var object[] */
-        $items = $qb->getQuery()->getResult();
-        // -----------------------------------------
+        $this->_em->persist($model);
 
-        return count($items) > 0;
+        $this->_em->flush();
     }
 
     /**
@@ -66,6 +56,32 @@ class User_repository extends Repository
     }
 
     /**
+     * @param array<string, mixed> $data
+     * @param integer|null         $id
+     *
+     * @return boolean
+     */
+    public function exists($data, $id = null)
+    {
+        // Specify logic here if applicable --------
+        $qb = $this->createQueryBuilder('u')
+            ->andWhere('u.email = :email')
+            ->setParameter('email', $data['email']);
+
+        if ($id)
+        {
+            $qb = $qb->andWhere('u.id != :id')
+                ->setParameter('id', $id);
+        }
+
+        /** @var object[] */
+        $items = $qb->getQuery()->getResult();
+        // -----------------------------------------
+
+        return count($items) > 0;
+    }
+
+    /**
      * @param integer|null $limit
      * @param integer|null $offset
      *
@@ -77,6 +93,37 @@ class User_repository extends Repository
     }
 
     /**
+     * @param array<string, mixed> $data
+     * @param \User                $model
+     * @param integer|null         $id
+     *
+     * @return \User
+     */
+    public function load($data, User $model, $id = null)
+    {
+        // List the specified fields from table ---
+        /** @var string */
+        $name = $data['name'];
+        $model->set_name($name);
+
+        /** @var string */
+        $email = $data['email'];
+        $model->set_email($email);
+
+        if ($id)
+        {
+            $model->set_updated_at();
+        }
+        else
+        {
+            $model->set_created_at();
+        }
+        // ----------------------------------------
+
+        return $model;
+    }
+
+    /**
      * @return integer
      */
     public function total()
@@ -85,12 +132,15 @@ class User_repository extends Repository
     }
 
     /**
+     * @param \User                $model
      * @param array<string, mixed> $data
      *
-     * @return boolean
+     * @return void
      */
-    public function validate($data)
+    public function update(\User $model, $data)
     {
-        return true;
+        $model = $this->load($data, $model);
+
+        $this->_em->flush();
     }
 }

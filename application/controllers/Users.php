@@ -18,9 +18,9 @@ use Rougin\SparkPlug\Controller;
 class Users extends Controller
 {
     /**
-     * @var \Rougin\Credo\Credo
+     * @var \User_repository
      */
-    private $credo;
+    private $depot;
 
     /**
      * Table associated with the controller.
@@ -43,10 +43,18 @@ class Users extends Controller
     {
         parent::__construct();
 
+        // Change items per page if specified ----
+        if ($limit = $this->input->get('l', true))
+        {
+            /** @var string $limit */
+            $this->limit = (int) $limit;
+        }
+        // ---------------------------------------
+
         // Initialize the Credo instance ---
         $this->load->database();
 
-        $this->credo = new Credo($this->db);
+        $credo = new Credo($this->db);
         // ---------------------------------
 
         // Show if --with-view enabled ----
@@ -64,6 +72,13 @@ class Users extends Controller
 
         $this->load->repository('user');
         // ------------------------------------
+
+        // Load the main repository of the model ---
+        /** @var \User_repository */
+        $depot = $credo->get_repository('User');
+
+        $this->depot = $depot;
+        // -----------------------------------------
     }
 
     /**
@@ -86,10 +101,7 @@ class Users extends Controller
             return;
         }
 
-        /** @var \User_repository */
-        $user = $this->credo->get_repository('User');
-
-        $exists = $user->exists($input);
+        $exists = $this->depot->exists($input);
 
         // Specify logic here if applicable ---------
         if ($exists)
@@ -98,11 +110,11 @@ class Users extends Controller
         }
         // ------------------------------------------
 
-        $valid = $user->validate($input);
+        $valid = $this->user->validate($input);
 
         if ($valid && ! $exists)
         {
-            // $this->user->create($input);
+            $this->depot->create($input);
 
             $text = 'Item successfully created!';
 
@@ -124,10 +136,7 @@ class Users extends Controller
      */
     public function edit($id)
     {
-        /** @var \User_repository */
-        $user = $this->credo->get_repository('User');
-
-        if (! $item = $user->find($id))
+        if (! $item = $this->depot->find($id))
         {
             show_404();
         }
@@ -155,7 +164,7 @@ class Users extends Controller
         }
         // -------------------------------------------
 
-        $exists = $user->exists($input, $id);
+        $exists = $this->depot->exists($input, $id);
 
         // Specify logic here if applicable ---------
         if ($exists)
@@ -164,11 +173,12 @@ class Users extends Controller
         }
         // ------------------------------------------
 
-        $valid = $user->validate($input);
+        $valid = $this->user->validate($input);
 
         if ($valid && ! $exists)
         {
-            // $this->user->update($id, $input);
+            /** @var \User $item */
+            $this->depot->update($item, $input);
 
             $text = 'Item successfully updated!';
 
@@ -191,19 +201,16 @@ class Users extends Controller
      */
     public function delete($id)
     {
-        // Show 404 page if not using "DELETE" method -------
+        // Show 404 page if not using "DELETE" method --------
         $method = $this->input->post('_method', true);
 
-        if ($method !== 'DELETE' || ! $this->user->find($id))
+        if ($method !== 'DELETE' || ! $this->depot->find($id))
         {
             show_404();
         }
-        // --------------------------------------------------
+        // ---------------------------------------------------
 
-        /** @var \User_repository */
-        $user = $this->credo->get_repository('User');
-
-        $user->delete($id);
+        $this->depot->delete($id);
 
         $text = 'Item successfully deleted!';
 
@@ -219,18 +226,18 @@ class Users extends Controller
      */
     public function index()
     {
-        /** @var \User_repository */
-        $user = $this->credo->get_repository('User');
+        // Generate the pagination links and its offset ------
+        $total = (int) $this->depot->total();
 
-        $total = $user->total();
+        $result = $this->user->paginate($this->limit, $total);
 
-        // $result = $user->paginate($this->limit, $total);
+        $data = array('links' => $result[1]);
 
-        $data = array('links' => '');
+        /** @var integer */
+        $offset = $result[0];
+        // ---------------------------------------------------
 
-        // $offset = $result[0];
-
-        $items = $user->get($this->limit);
+        $items = $this->depot->get($this->limit, $offset);
 
         $data['items'] = $items;
 
