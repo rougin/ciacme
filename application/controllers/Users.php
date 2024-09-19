@@ -89,26 +89,24 @@ class Users extends Controller
      */
     public function create()
     {
-        $data = array('table' => $this->table);
-
         /** @var array<string, mixed> */
         $input = $this->input->post(null, true);
 
         if (! $input)
         {
-            $this->load->view('users/create', $data);
+            $this->load->view('users/create');
 
             return;
         }
 
         $exists = $this->depot->exists($input);
 
-        // Specify logic here if applicable ---------
+        // Specify logic here if applicable ------------------
         if ($exists)
         {
-            $data['error'] = 'Email already exists.';
+            $data = array('error' => 'Email already exists.');
         }
-        // ------------------------------------------
+        // ---------------------------------------------------
 
         $valid = $this->user->validate($input);
 
@@ -141,6 +139,7 @@ class Users extends Controller
             show_404();
         }
 
+        /** @var \User $item */
         $data = array('item' => $item);
 
         // Skip if provided empty input -----------
