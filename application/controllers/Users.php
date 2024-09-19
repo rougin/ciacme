@@ -142,7 +142,9 @@ class Users extends Controller
 
         if (! $input)
         {
+            // Show if --with-view enabled ---
             $this->load->view('users/edit', $data);
+            // -------------------------------
 
             return;
         }
@@ -250,8 +252,8 @@ class Users extends Controller
             $data['alert'] = $alert;
         }
 
-        // Show if --with-view enabled ---------
+        // Show if --with-view enabled ---
         $this->load->view('users/index', $data);
-        // -------------------------------------
+        // -------------------------------
     }
 }
