@@ -98,7 +98,7 @@ class User extends Model
      */
     public function exists($data, $id = null)
     {
-        // Specify logic here if applicable ------
+        // Specify logic here if applicable ---
         $this->db->from($this->table);
 
         $this->db->where('email', $data['email']);
@@ -109,7 +109,7 @@ class User extends Model
         }
 
         $count = $this->db->count_all_results();
-        // ---------------------------------------
+        // ------------------------------------
 
         return $count > 0;
     }
@@ -152,11 +152,11 @@ class User extends Model
     {
         $input = array();
 
-        // List the specified fields from table ---
+        // List editable fields from table ---
         $input['name'] = $data['name'];
 
         $input['email'] = $data['email'];
-        // ----------------------------------------
+        // -----------------------------------
 
         return $input;
     }

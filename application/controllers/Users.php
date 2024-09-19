@@ -21,13 +21,13 @@ class Users extends Controller
     {
         parent::__construct();
 
-        // Initialize the Wildfire instance ---
+        // Initialize the Database loader ---
         $this->load->helper('inflector');
 
         $this->load->database();
-        // ------------------------------------
+        // ----------------------------------
 
-        // Show if --with-view enabled ----
+        // Show if --with-view enabled ---
         $this->load->helper('form');
 
         $this->load->helper('url');
@@ -35,7 +35,7 @@ class Users extends Controller
         $this->load->library('pagination');
 
         $this->load->library('session');
-        // --------------------------------
+        // -------------------------------
 
         // Load multiple models if required ---
         $this->load->model('user');
@@ -50,7 +50,7 @@ class Users extends Controller
      */
     public function create()
     {
-        // Skip if provided empty input --------
+        // Skip if provided empty input ---
         /** @var array<string, mixed> */
         $input = $this->input->post(null, true);
 
@@ -62,9 +62,9 @@ class Users extends Controller
 
             return;
         }
-        // -------------------------------------
+        // --------------------------------
 
-        // Specify logic here if applicable ---------
+        // Specify logic here if applicable ---
         $exists = $this->user->exists($input);
 
         $data = array();
@@ -73,20 +73,20 @@ class Users extends Controller
         {
             $data['error'] = 'Email already exists.';
         }
-        // ------------------------------------------
+        // ------------------------------------
 
-        // Check if provided input is valid ---------
+        // Check if provided input is valid ---
         $valid = $this->user->validate($input);
 
         if (! $valid || $exists)
         {
-            // Show if --with-view enabled ----------
+            // Show if --with-view enabled ---
             $this->load->view('users/create', $data);
-            // --------------------------------------
+            // -------------------------------
 
             return;
         }
-        // ------------------------------------------
+        // ------------------------------------
 
         // Create the user then go back to "index" page ---
         $this->user->create($input);
@@ -118,19 +118,19 @@ class Users extends Controller
         $data = array('item' => $item);
         // -----------------------------------
 
-        // Skip if provided empty input -----------
+        // Skip if provided empty input ---
         /** @var array<string, mixed> */
         $input = $this->input->post(null, true);
 
         if (! $input)
         {
-            // Show if --with-view enabled --------
+            // Show if --with-view enabled ---
             $this->load->view('users/edit', $data);
-            // ------------------------------------
+            // -------------------------------
 
             return;
         }
-        // ----------------------------------------
+        // --------------------------------
 
         // Show 404 page if not using "PUT" method ---
         $method = $this->input->post('_method', true);
@@ -141,27 +141,27 @@ class Users extends Controller
         }
         // -------------------------------------------
 
-        // Specify logic here if applicable ---------
+        // Specify logic here if applicable ---
         $exists = $this->user->exists($input, $id);
 
         if ($exists)
         {
             $data['error'] = 'Email already exists.';
         }
-        // ------------------------------------------
+        // ------------------------------------
 
-        // Check if provided input is valid -------
+        // Check if provided input is valid ---
         $valid = $this->user->validate($input);
 
         if (! $valid || $exists)
         {
-            // Show if --with-view enabled --------
+            // Show if --with-view enabled ---
             $this->load->view('users/edit', $data);
-            // ------------------------------------
+            // -------------------------------
 
             return;
         }
-        // ----------------------------------------
+        // ------------------------------------
 
         // Update the user then go back to "index" page ---
         $this->user->update($id, $input);
@@ -183,14 +183,14 @@ class Users extends Controller
      */
     public function delete($id)
     {
-        // Show 404 page if not using "DELETE" method -------
+        // Show 404 page if not using "DELETE" method ---
         $method = $this->input->post('_method', true);
 
         if ($method !== 'DELETE' || ! $this->user->find($id))
         {
             show_404();
         }
-        // --------------------------------------------------
+        // ----------------------------------------------
 
         // Delete the user then go back to "index" page ---
         $this->user->delete($id);
