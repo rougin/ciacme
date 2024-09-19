@@ -49,7 +49,7 @@ class User_repository extends Repository
      */
     public function exists($data, $id = null)
     {
-        // Specify logic here if applicable --------
+        // Specify logic here if applicable ---
         $qb = $this->createQueryBuilder('u')
             ->andWhere('u.email = :email')
             ->setParameter('email', $data['email']);
@@ -62,7 +62,7 @@ class User_repository extends Repository
 
         /** @var \User[] */
         $items = $qb->getQuery()->getResult();
-        // -----------------------------------------
+        // ------------------------------------
 
         return count($items) > 0;
     }
@@ -87,6 +87,7 @@ class User_repository extends Repository
      */
     public function set($data, User $model, $id = null)
     {
+        // List editable fields from table ---
         /** @var string */
         $name = $data['name'];
         $model->set_name($name);
@@ -103,6 +104,7 @@ class User_repository extends Repository
         {
             $model->set_created_at();
         }
+        // -----------------------------------
 
         return $model;
     }

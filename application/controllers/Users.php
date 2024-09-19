@@ -33,7 +33,7 @@ class Users extends Controller
         $this->load->database();
         // ----------------------------------
 
-        // Show if --with-view enabled ----
+        // Show if --with-view enabled ---
         $this->load->helper('form');
 
         $this->load->helper('url');
@@ -41,7 +41,7 @@ class Users extends Controller
         $this->load->library('pagination');
 
         $this->load->library('session');
-        // --------------------------------
+        // -------------------------------
 
         // Load multiple models if required ---
         $this->load->model('user');
@@ -67,7 +67,7 @@ class Users extends Controller
      */
     public function create()
     {
-        // Skip if provided empty input --------
+        // Skip if provided empty input ---
         /** @var array<string, mixed> */
         $input = $this->input->post(null, true);
 
@@ -79,9 +79,9 @@ class Users extends Controller
 
             return;
         }
-        // -------------------------------------
+        // --------------------------------
 
-        // Specify logic here if applicable ---------
+        // Specify logic here if applicable ---
         $exists = $this->depot->exists($input);
 
         $data = array();
@@ -90,20 +90,20 @@ class Users extends Controller
         {
             $data['error'] = 'Email already exists.';
         }
-        // ------------------------------------------
+        // ------------------------------------
 
-        // Check if provided input is valid ---------
+        // Check if provided input is valid ---
         $valid = $this->user->validate($input);
 
         if (! $valid || $exists)
         {
-            // Show if --with-view enabled ----------
+            // Show if --with-view enabled ----
             $this->load->view('users/create', $data);
-            // --------------------------------------
+            // --------------------------------
 
             return;
         }
-        // ------------------------------------------
+        // ------------------------------------
 
         // Create the user then go back to "index" page ---
         $this->depot->create($input);
@@ -136,7 +136,7 @@ class Users extends Controller
         $data = array('item' => $item);
         // -----------------------------------
 
-        // Skip if provided empty input -----------
+        // Skip if provided empty input ---
         /** @var array<string, mixed> */
         $input = $this->input->post(null, true);
 
@@ -146,7 +146,7 @@ class Users extends Controller
 
             return;
         }
-        // ----------------------------------------
+        // --------------------------------
 
         // Show 404 page if not using "PUT" method ---
         $method = $this->input->post('_method', true);
@@ -157,27 +157,27 @@ class Users extends Controller
         }
         // -------------------------------------------
 
-        // Specify logic here if applicable ---------
+        // Specify logic here if applicable ---
         $exists = $this->depot->exists($input, $id);
 
         if ($exists)
         {
             $data['error'] = 'Email already exists.';
         }
-        // ------------------------------------------
+        // ------------------------------------
 
-        // Check if provided input is valid ---------
+        // Check if provided input is valid ---
         $valid = $this->user->validate($input);
 
         if (! $valid || $exists)
         {
-            // Show if --with-view enabled --------
+            // Show if --with-view enabled ---
             $this->load->view('users/edit', $data);
-            // ------------------------------------
+            // -------------------------------
 
             return;
         }
-        // ------------------------------------------
+        // ------------------------------------
 
         // Update the user then go back to "index" page ---
         /** @var \User $item */
