@@ -115,6 +115,7 @@ class Users extends Controller
             show_404();
         }
 
+        /** @var \User $item */
         $data = array('item' => $item);
         // -----------------------------------
 
@@ -217,8 +218,11 @@ class Users extends Controller
 
         $data = array('links' => $result[1]);
 
-        $items = $this->user->get(10, (int) $result[0]);
+        /** @var integer */
+        $offset = $result[0];
         // ----------------------------------------------
+
+        $items = $this->user->get(10, $offset);
 
         $data['items'] = $items->result();
 
@@ -227,8 +231,8 @@ class Users extends Controller
             $data['alert'] = $alert;
         }
 
-        // Show if --with-view enabled ---------
+        // Show if --with-view enabled ---
         $this->load->view('users/index', $data);
-        // -------------------------------------
+        // -------------------------------
     }
 }
