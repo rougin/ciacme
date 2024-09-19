@@ -97,9 +97,9 @@ class Users extends Controller
 
         if (! $valid || $exists)
         {
-            // Show if --with-view enabled ----
+            // Show if --with-view enabled ---
             $this->load->view('users/create', $data);
-            // --------------------------------
+            // -------------------------------
 
             return;
         }
