@@ -67,6 +67,8 @@ class Users extends Controller
         // Specify logic here if applicable ---------
         $exists = $this->user->exists($input);
 
+        $data = array();
+
         if ($exists)
         {
             $data['error'] = 'Email already exists.';
