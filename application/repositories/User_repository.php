@@ -8,14 +8,11 @@ use Rougin\Credo\Repository;
  * @extends \Rougin\Credo\Repository<\User>
  *
  * @property \CI_DB_query_builder $db
+ *
+ * @method \User|null find(integer $id)
  */
 class User_repository extends Repository
 {
-    /**
-     * @var string
-     */
-    protected $table = 'users';
-
     /**
      * @param array<string, mixed> $data
      *
@@ -25,7 +22,7 @@ class User_repository extends Repository
     {
         $model = new User;
 
-        $model = $this->load($data, $model);
+        $model = $this->set($data, $model);
 
         $this->_em->persist($model);
 
@@ -33,26 +30,15 @@ class User_repository extends Repository
     }
 
     /**
-     * @param integer $id
+     * @param \User $model
      *
-     * @return boolean
+     * @return void
      */
-    public function delete($id)
+    public function delete(User $model)
     {
-        $item = $this->find($id);
-
-        if (! $item)
-        {
-            return false;
-        }
-
-        $this->_em->remove($item);
+        $this->_em->remove($model);
 
         $this->_em->flush();
-
-        $item = $this->find($id);
-
-        return $item === null;
     }
 
     /**
@@ -74,7 +60,7 @@ class User_repository extends Repository
                 ->setParameter('id', $id);
         }
 
-        /** @var object[] */
+        /** @var \User[] */
         $items = $qb->getQuery()->getResult();
         // -----------------------------------------
 
@@ -85,7 +71,7 @@ class User_repository extends Repository
      * @param integer|null $limit
      * @param integer|null $offset
      *
-     * @return object[]
+     * @return \User[]
      */
     public function get($limit = null, $offset = null)
     {
@@ -99,9 +85,8 @@ class User_repository extends Repository
      *
      * @return \User
      */
-    public function load($data, User $model, $id = null)
+    public function set($data, User $model, $id = null)
     {
-        // List the specified fields from table ---
         /** @var string */
         $name = $data['name'];
         $model->set_name($name);
@@ -118,7 +103,6 @@ class User_repository extends Repository
         {
             $model->set_created_at();
         }
-        // ----------------------------------------
 
         return $model;
     }
@@ -139,7 +123,7 @@ class User_repository extends Repository
      */
     public function update(\User $model, $data)
     {
-        $model = $this->load($data, $model);
+        $model = $this->set($data, $model);
 
         $this->_em->flush();
     }

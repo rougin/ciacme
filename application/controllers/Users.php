@@ -23,39 +23,15 @@ class Users extends Controller
     private $depot;
 
     /**
-     * Table associated with the controller.
-     *
-     * @var string
-     */
-    private $table = 'users';
-
-    /**
-     * Number of items to show per page.
-     *
-     * @var integer
-     */
-    private $limit = 10;
-
-    /**
      * Loads the helpers, libraries, and models.
      */
     public function __construct()
     {
         parent::__construct();
 
-        // Change items per page if specified ----
-        if ($limit = $this->input->get('l', true))
-        {
-            /** @var string $limit */
-            $this->limit = (int) $limit;
-        }
-        // ---------------------------------------
-
-        // Initialize the Credo instance ---
+        // Initialize the Database loader ---
         $this->load->database();
-
-        $credo = new Credo($this->db);
-        // ---------------------------------
+        // ----------------------------------
 
         // Show if --with-view enabled ----
         $this->load->helper('form');
@@ -74,6 +50,8 @@ class Users extends Controller
         // ------------------------------------
 
         // Load the main repository of the model ---
+        $credo = new Credo($this->db);
+
         /** @var \User_repository */
         $depot = $credo->get_repository('User');
 
@@ -101,27 +79,33 @@ class Users extends Controller
 
         $exists = $this->depot->exists($input);
 
-        // Specify logic here if applicable ------------------
+        $data = array();
+
+        // Specify logic here if applicable ---------
         if ($exists)
         {
-            $data = array('error' => 'Email already exists.');
+            $data['error'] = 'Email already exists.';
         }
-        // ---------------------------------------------------
+        // ------------------------------------------
 
         $valid = $this->user->validate($input);
 
-        if ($valid && ! $exists)
+        if (! $valid || ! $exists)
         {
-            $this->depot->create($input);
+            // Show if --with-view enabled ----------
+            $this->load->view('users/create', $data);
+            // --------------------------------------
 
-            $text = 'Item successfully created!';
-
-            $this->session->set_flashdata('alert', $text);
-
-            redirect('users');
+            return;
         }
 
-        $this->load->view('users/create', $data);
+        $this->depot->create($input);
+
+        $text = 'Item successfully created!';
+
+        $this->session->set_flashdata('alert', $text);
+
+        redirect('users');
     }
 
     /**
@@ -163,9 +147,9 @@ class Users extends Controller
         }
         // -------------------------------------------
 
+        // Specify logic here if applicable ---------
         $exists = $this->depot->exists($input, $id);
 
-        // Specify logic here if applicable ---------
         if ($exists)
         {
             $data['error'] = 'Email already exists.';
@@ -174,21 +158,23 @@ class Users extends Controller
 
         $valid = $this->user->validate($input);
 
-        if ($valid && ! $exists)
+        if (! $valid || ! $exists)
         {
-            /** @var \User $item */
-            $this->depot->update($item, $input);
+            // Show if --with-view enabled --------
+            $this->load->view('users/edit', $data);
+            // ------------------------------------
 
-            $text = 'Item successfully updated!';
-
-            $this->session->set_flashdata('alert', $text);
-
-            redirect('users');
+            return;
         }
 
-        // Show if --with-view enabled --------
-        $this->load->view('users/edit', $data);
-        // ------------------------------------
+        /** @var \User $item */
+        $this->depot->update($item, $input);
+
+        $text = 'Item successfully updated!';
+
+        $this->session->set_flashdata('alert', $text);
+
+        redirect('users');
     }
 
     /**
@@ -200,16 +186,19 @@ class Users extends Controller
      */
     public function delete($id)
     {
-        // Show 404 page if not using "DELETE" method --------
+        // Show 404 page if not using "DELETE" method ---
         $method = $this->input->post('_method', true);
 
-        if ($method !== 'DELETE' || ! $this->depot->find($id))
+        $item = $this->depot->find($id);
+
+        if ($method !== 'DELETE' || ! $item)
         {
             show_404();
         }
-        // ---------------------------------------------------
+        // ----------------------------------------------
 
-        $this->depot->delete($id);
+        /** @var \User $item */
+        $this->depot->delete($item);
 
         $text = 'Item successfully deleted!';
 
@@ -225,18 +214,18 @@ class Users extends Controller
      */
     public function index()
     {
-        // Generate the pagination links and its offset ------
+        // Generate the pagination links and its offset ---
         $total = (int) $this->depot->total();
 
-        $result = $this->user->paginate($this->limit, $total);
+        $result = $this->user->paginate(10, $total);
 
         $data = array('links' => $result[1]);
 
         /** @var integer */
         $offset = $result[0];
-        // ---------------------------------------------------
+        // ------------------------------------------------
 
-        $items = $this->depot->get($this->limit, $offset);
+        $items = $this->depot->get(10, $offset);
 
         $data['items'] = $items;
 
