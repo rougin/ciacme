@@ -23,7 +23,7 @@ class Users extends Controller
     private $depot;
 
     /**
-     * Loads the helpers, libraries, and models.
+     * Loads the required helpers, libraries, and models.
      */
     public function __construct()
     {
@@ -67,30 +67,35 @@ class Users extends Controller
      */
     public function create()
     {
+        // Skip if provided empty input --------
         /** @var array<string, mixed> */
         $input = $this->input->post(null, true);
 
         if (! $input)
         {
+            // Show if --with-view enabled ---
             $this->load->view('users/create');
+            // -------------------------------
 
             return;
         }
+        // -------------------------------------
 
+        // Specify logic here if applicable ---------
         $exists = $this->depot->exists($input);
 
         $data = array();
 
-        // Specify logic here if applicable ---------
         if ($exists)
         {
             $data['error'] = 'Email already exists.';
         }
         // ------------------------------------------
 
+        // Check if provided input is valid ---------
         $valid = $this->user->validate($input);
 
-        if (! $valid || ! $exists)
+        if (! $valid || $exists)
         {
             // Show if --with-view enabled ----------
             $this->load->view('users/create', $data);
@@ -98,14 +103,17 @@ class Users extends Controller
 
             return;
         }
+        // ------------------------------------------
 
+        // Create the user then go back to "index" page ---
         $this->depot->create($input);
 
-        $text = 'Item successfully created!';
+        $text = (string) 'User successfully created!';
 
         $this->session->set_flashdata('alert', $text);
 
         redirect('users');
+        // ------------------------------------------------
     }
 
     /**
@@ -118,6 +126,7 @@ class Users extends Controller
      */
     public function edit($id)
     {
+        // Show 404 page if user not found ---
         if (! $item = $this->depot->find($id))
         {
             show_404();
@@ -125,6 +134,7 @@ class Users extends Controller
 
         /** @var \User $item */
         $data = array('item' => $item);
+        // -----------------------------------
 
         // Skip if provided empty input -----------
         /** @var array<string, mixed> */
@@ -156,9 +166,10 @@ class Users extends Controller
         }
         // ------------------------------------------
 
+        // Check if provided input is valid ---------
         $valid = $this->user->validate($input);
 
-        if (! $valid || ! $exists)
+        if (! $valid || $exists)
         {
             // Show if --with-view enabled --------
             $this->load->view('users/edit', $data);
@@ -166,15 +177,18 @@ class Users extends Controller
 
             return;
         }
+        // ------------------------------------------
 
+        // Update the user then go back to "index" page ---
         /** @var \User $item */
         $this->depot->update($item, $input);
 
-        $text = 'Item successfully updated!';
+        $text = (string) 'User successfully updated!';
 
         $this->session->set_flashdata('alert', $text);
 
         redirect('users');
+        // ------------------------------------------------
     }
 
     /**
@@ -197,14 +211,16 @@ class Users extends Controller
         }
         // ----------------------------------------------
 
+        // Delete the user then go back to "index" page ---
         /** @var \User $item */
         $this->depot->delete($item);
 
-        $text = 'Item successfully deleted!';
+        $text = (string) 'User successfully deleted!';
 
         $this->session->set_flashdata('alert', $text);
 
         redirect('users');
+        // ------------------------------------------------
     }
 
     /**
@@ -214,7 +230,7 @@ class Users extends Controller
      */
     public function index()
     {
-        // Generate the pagination links and its offset ---
+        // Create pagination links and get the offset ---
         $total = (int) $this->depot->total();
 
         $result = $this->user->paginate(10, $total);
@@ -223,7 +239,7 @@ class Users extends Controller
 
         /** @var integer */
         $offset = $result[0];
-        // ------------------------------------------------
+        // ----------------------------------------------
 
         $items = $this->depot->get(10, $offset);
 
