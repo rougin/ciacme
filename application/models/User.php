@@ -17,7 +17,6 @@ class User extends Model
     use WildfireTrait;
 
     /**
-     * TODO: Add to Credo, Wildfire.
      * Additional configuration to Pagination Class.
      *
      * @link https://codeigniter.com/userguide3/libraries/pagination.html?highlight=pagination#customizing-the-pagination
@@ -52,23 +51,20 @@ class User extends Model
     protected $table = 'users';
 
     /**
-     * NOTE: Set to "true" if "--timestamps" is specified.
-     * TODO: Add this to Credo, Wildfire.
+     * Allows updating of timestamp fields ("created_at", "updated_at").
      *
      * @var boolean
      */
     protected $timestamps = true;
 
     /**
-     * TODO: Add to Credo, Wildfire.
-     *
      * @param array<string, mixed> $data
      *
      * @return boolean
      */
     public function create($data)
     {
-        $input = $this->payload($data);
+        $input = $this->input($data);
 
         if ($this->timestamps)
         {
@@ -81,8 +77,20 @@ class User extends Model
     }
 
     /**
-     * TODO: Add to Credo, Wildfire.
+     * @param integer $id
      *
+     * @return boolean
+     */
+    public function delete($id)
+    {
+        $this->db->where($this->primary, $id);
+
+        $result = $this->db->delete($this->table);
+
+        return $result ? true : false;
+    }
+
+    /**
      * @param array<string, mixed> $data
      * @param integer|null         $id
      *
@@ -107,24 +115,6 @@ class User extends Model
     }
 
     /**
-     * TODO: Add to Credo, Wildfire.
-     *
-     * @param integer $id
-     *
-     * @return boolean
-     */
-    public function delete($id)
-    {
-        $this->db->where($this->primary, $id);
-
-        $result = $this->db->delete($this->table);
-
-        return $result ? true : false;
-    }
-
-    /**
-     * TODO: Add to Credo, Wildfire.
-     *
      * @return integer
      */
     public function total()
@@ -133,8 +123,6 @@ class User extends Model
     }
 
     /**
-     * TODO: Add to Credo, Wildfire.
-     *
      * @param integer              $id
      * @param array<string, mixed> $data
      *
@@ -142,7 +130,7 @@ class User extends Model
      */
     public function update($id, $data)
     {
-        $input = $this->payload($data);
+        $input = $this->input($data, $id);
 
         if ($this->timestamps)
         {
@@ -155,14 +143,12 @@ class User extends Model
     }
 
     /**
-     * TODO: Add to Credo, Wildfire.
-     *
      * @param array<string, mixed> $data
      * @param integer|null         $id
      *
      * @return array<string, mixed>
      */
-    protected function payload($data, $id = null)
+    protected function input($data, $id = null)
     {
         $input = array();
 

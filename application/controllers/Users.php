@@ -15,21 +15,7 @@ use Rougin\SparkPlug\Controller;
 class Users extends Controller
 {
     /**
-     * Table associated with the controller.
-     *
-     * @var string
-     */
-    private $table = 'users';
-
-    /**
-     * Number of items to show per page.
-     *
-     * @var integer
-     */
-    private $limit = 10;
-
-    /**
-     * Loads the helpers, libraries, and models.
+     * Loads the required helpers, libraries, and models.
      */
     public function __construct()
     {
@@ -64,41 +50,51 @@ class Users extends Controller
      */
     public function create()
     {
-        $data = array('table' => $this->table);
-
+        // Skip if provided empty input --------
         /** @var array<string, mixed> */
         $input = $this->input->post(null, true);
 
         if (! $input)
         {
-            $this->load->view('users/create', $data);
+            // Show if --with-view enabled ---
+            $this->load->view('users/create');
+            // -------------------------------
 
             return;
         }
-
-        $exists = $this->user->exists($input);
+        // -------------------------------------
 
         // Specify logic here if applicable ---------
+        $exists = $this->user->exists($input);
+
         if ($exists)
         {
             $data['error'] = 'Email already exists.';
         }
         // ------------------------------------------
 
+        // Check if provided input is valid ---------
         $valid = $this->user->validate($input);
 
-        if ($valid && ! $exists)
+        if (! $valid || $exists)
         {
-            $this->user->create($input);
+            // Show if --with-view enabled ----------
+            $this->load->view('users/create', $data);
+            // --------------------------------------
 
-            $text = 'Item successfully created!';
-
-            $this->session->set_flashdata('alert', $text);
-
-            redirect('users');
+            return;
         }
+        // ------------------------------------------
 
-        $this->load->view('users/create', $data);
+        // Create the user then go back to "index" page ---
+        $this->user->create($input);
+
+        $text = (string) 'User successfully created!';
+
+        $this->session->set_flashdata('alert', $text);
+
+        redirect('users');
+        // ------------------------------------------------
     }
 
     /**
@@ -111,12 +107,14 @@ class Users extends Controller
      */
     public function edit($id)
     {
+        // Redirect to 404 if user not found ---
         if (! $item = $this->user->find($id))
         {
             show_404();
         }
 
         $data = array('item' => $item);
+        // -------------------------------------
 
         // Skip if provided empty input -----------
         /** @var array<string, mixed> */
@@ -124,7 +122,9 @@ class Users extends Controller
 
         if (! $input)
         {
+            // Show if --with-view enabled --------
             $this->load->view('users/edit', $data);
+            // ------------------------------------
 
             return;
         }
@@ -139,31 +139,37 @@ class Users extends Controller
         }
         // -------------------------------------------
 
+        // Specify logic here if applicable ---------
         $exists = $this->user->exists($input, $id);
 
-        // Specify logic here if applicable ---------
         if ($exists)
         {
             $data['error'] = 'Email already exists.';
         }
         // ------------------------------------------
 
+        // Check if provided input is valid -------
         $valid = $this->user->validate($input);
 
-        if ($valid && ! $exists)
+        if (! $valid || $exists)
         {
-            $this->user->update($id, $input);
+            // Show if --with-view enabled --------
+            $this->load->view('users/edit', $data);
+            // ------------------------------------
 
-            $text = 'Item successfully updated!';
-
-            $this->session->set_flashdata('alert', $text);
-
-            redirect('users');
+            return;
         }
+        // ----------------------------------------
 
-        // Show if --with-view enabled --------
-        $this->load->view('users/edit', $data);
-        // ------------------------------------
+        // Update the user then go back to "index" page ---
+        $this->user->update($id, $input);
+
+        $text = (string) 'User successfully updated!';
+
+        $this->session->set_flashdata('alert', $text);
+
+        redirect('users');
+        // ------------------------------------------------
     }
 
     /**
@@ -184,13 +190,15 @@ class Users extends Controller
         }
         // --------------------------------------------------
 
+        // Delete the user then go back to "index" page ---
         $this->user->delete($id);
 
-        $text = 'Item successfully deleted!';
+        $text = (string) 'User successfully deleted!';
 
         $this->session->set_flashdata('alert', $text);
 
         redirect('users');
+        // ------------------------------------------------
     }
 
     /**
@@ -200,13 +208,15 @@ class Users extends Controller
      */
     public function index()
     {
+        // Create pagination links and get the offset ---
         $total = (int) $this->user->total();
 
-        $result = $this->user->paginate($this->limit, $total);
+        $result = $this->user->paginate(10, $total);
 
         $data = array('links' => $result[1]);
 
-        $items = $this->user->get($this->limit, (int) $result[0]);
+        $items = $this->user->get(10, (int) $result[0]);
+        // ----------------------------------------------
 
         $data['items'] = $items->result();
 
