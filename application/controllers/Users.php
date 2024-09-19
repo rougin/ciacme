@@ -187,7 +187,9 @@ class Users extends Controller
         // Show 404 page if not using "DELETE" method ---
         $method = $this->input->post('_method', true);
 
-        if ($method !== 'DELETE' || ! $this->user->find($id))
+        $item = $this->user->find($id);
+
+        if ($method !== 'DELETE' || ! $item)
         {
             show_404();
         }
