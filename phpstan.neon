@@ -3,7 +3,9 @@ parameters:
   paths:
     - application/controllers
     - application/models
+    - application/repositories
   scanDirectories:
+    - application/core
     - system
   excludePaths:
     analyse:

@@ -2,6 +2,7 @@
 
 defined('BASEPATH') or exit('No direct script access allowed');
 
+use Rougin\Credo\Credo;
 use Rougin\SparkPlug\Controller;
 
 /**
@@ -12,9 +13,15 @@ use Rougin\SparkPlug\Controller;
  * @property \MY_Loader           $load
  * @property \CI_Session          $session
  * @property \User                $user
+ * @property \User_repository     $user_repository
  */
 class Users extends Controller
 {
+    /**
+     * @var \Rougin\Credo\Credo
+     */
+    private $credo;
+
     /**
      * Table associated with the controller.
      *
@@ -36,9 +43,11 @@ class Users extends Controller
     {
         parent::__construct();
 
-        // Initialize the Database loader ---
+        // Initialize the Credo instance ---
         $this->load->database();
-        // ----------------------------------
+
+        $this->credo = new Credo($this->db);
+        // ---------------------------------
 
         // Show if --with-view enabled ----
         $this->load->helper('form');
@@ -77,7 +86,10 @@ class Users extends Controller
             return;
         }
 
-        $exists = false;
+        /** @var \User_repository */
+        $user = $this->credo->get_repository('User');
+
+        $exists = $user->exists($input);
 
         // Specify logic here if applicable ---------
         if ($exists)
@@ -86,7 +98,7 @@ class Users extends Controller
         }
         // ------------------------------------------
 
-        $valid = $this->user->validate($input);
+        $valid = $user->validate($input);
 
         if ($valid && ! $exists)
         {
@@ -112,7 +124,10 @@ class Users extends Controller
      */
     public function edit($id)
     {
-        if (! $item = $this->user->find($id))
+        /** @var \User_repository */
+        $user = $this->credo->get_repository('User');
+
+        if (! $item = $user->find($id))
         {
             show_404();
         }
@@ -140,7 +155,7 @@ class Users extends Controller
         }
         // -------------------------------------------
 
-        $exists = false;
+        $exists = $user->exists($input, $id);
 
         // Specify logic here if applicable ---------
         if ($exists)
@@ -149,7 +164,7 @@ class Users extends Controller
         }
         // ------------------------------------------
 
-        $valid = $this->user->validate($input);
+        $valid = $user->validate($input);
 
         if ($valid && ! $exists)
         {
@@ -185,7 +200,10 @@ class Users extends Controller
         }
         // --------------------------------------------------
 
-        // $this->user->delete($id);
+        /** @var \User_repository */
+        $user = $this->credo->get_repository('User');
+
+        $user->delete($id);
 
         $text = 'Item successfully deleted!';
 
@@ -201,13 +219,18 @@ class Users extends Controller
      */
     public function index()
     {
-        $total = 0;
+        /** @var \User_repository */
+        $user = $this->credo->get_repository('User');
 
-        $result = $this->user->paginate($this->limit, $total);
+        $total = $user->total();
 
-        $data = array('links' => $result[1]);
+        // $result = $user->paginate($this->limit, $total);
 
-        $items = $this->user->get($this->limit, (int) $result[0]);
+        $data = array('links' => '');
+
+        // $offset = $result[0];
+
+        $items = $user->get($this->limit);
 
         $data['items'] = $items;
 

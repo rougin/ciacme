@@ -1,11 +1,13 @@
 <?php
 
-// Specify the paths in this variable ----------
+// Specify the paths in this variable -----------
 $paths = array();
 
 $paths[] = __DIR__ . '/application/controllers';
+$paths[] = __DIR__ . '/application/core';
 $paths[] = __DIR__ . '/application/models';
-// ---------------------------------------------
+$paths[] = __DIR__ . '/application/repositories';
+// ----------------------------------------------
 
 // Specify the rules for code formatting ---------
 $rules = array('@PSR12' => true);
