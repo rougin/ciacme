@@ -107,14 +107,14 @@ class Users extends Controller
      */
     public function edit($id)
     {
-        // Redirect to 404 if user not found ---
+        // Show 404 page if user not found ---
         if (! $item = $this->user->find($id))
         {
             show_404();
         }
 
         $data = array('item' => $item);
-        // -------------------------------------
+        // -----------------------------------
 
         // Skip if provided empty input -----------
         /** @var array<string, mixed> */
