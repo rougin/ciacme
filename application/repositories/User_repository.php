@@ -9,7 +9,12 @@ use Rougin\Credo\Repository;
  *
  * @property \CI_DB_query_builder $db
  *
+ * @method void       create(array<string, mixed> $data, \User $entity)
+ * @method void       delete(\User $entity)
  * @method \User|null find(integer $id)
+ * @method \User[]    get(integer|null $limit = null, integer|null $offset = null)
+ * @method \User      set(array<string, mixed> $data, \User $entity, integer|null $id = null)
+ * @method void       update(\User $entity, array<string, mixed> $data)
  */
 class User_repository extends Repository
 {
