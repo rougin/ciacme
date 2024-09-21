@@ -14,34 +14,8 @@ use Rougin\Credo\Repository;
 class User_repository extends Repository
 {
     /**
-     * @param array<string, mixed> $data
+     * Checks if the specified data exists in the database.
      *
-     * @return void
-     */
-    public function create($data)
-    {
-        $model = new User;
-
-        $model = $this->set($data, $model);
-
-        $this->_em->persist($model);
-
-        $this->_em->flush();
-    }
-
-    /**
-     * @param \User $model
-     *
-     * @return void
-     */
-    public function delete(User $model)
-    {
-        $this->_em->remove($model);
-
-        $this->_em->flush();
-    }
-
-    /**
      * @param array<string, mixed> $data
      * @param integer|null         $id
      *
@@ -68,65 +42,35 @@ class User_repository extends Repository
     }
 
     /**
-     * @param integer|null $limit
-     * @param integer|null $offset
+     * Updates the payload to be passed to the entity.
      *
-     * @return \User[]
-     */
-    public function get($limit = null, $offset = null)
-    {
-        return $this->findBy(array(), null, $limit, $offset);
-    }
-
-    /**
      * @param array<string, mixed> $data
-     * @param \User                $model
+     * @param \User                $entity
      * @param integer|null         $id
      *
      * @return \User
      */
-    public function set($data, User $model, $id = null)
+    public function set($data, $entity, $id = null)
     {
         // List editable fields from table ---
         /** @var string */
         $name = $data['name'];
-        $model->set_name($name);
+        $entity->set_name($name);
 
         /** @var string */
         $email = $data['email'];
-        $model->set_email($email);
+        $entity->set_email($email);
 
         if ($id)
         {
-            $model->set_updated_at();
+            $entity->set_updated_at();
         }
         else
         {
-            $model->set_created_at();
+            $entity->set_created_at();
         }
         // -----------------------------------
 
-        return $model;
-    }
-
-    /**
-     * @return integer
-     */
-    public function total()
-    {
-        return $this->count(array());
-    }
-
-    /**
-     * @param \User                $model
-     * @param array<string, mixed> $data
-     *
-     * @return void
-     */
-    public function update(\User $model, $data)
-    {
-        $model = $this->set($data, $model);
-
-        $this->_em->flush();
+        return $entity;
     }
 }

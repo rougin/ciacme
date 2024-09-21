@@ -20,7 +20,7 @@ class Users extends Controller
     /**
      * @var \User_repository
      */
-    private $depot;
+    private $repo;
 
     /**
      * Loads the required helpers, libraries, and models.
@@ -53,9 +53,9 @@ class Users extends Controller
         $credo = new Credo($this->db);
 
         /** @var \User_repository */
-        $depot = $credo->get_repository('User');
+        $repo = $credo->get_repository('User');
 
-        $this->depot = $depot;
+        $this->repo = $repo;
         // -----------------------------------------
     }
 
@@ -82,7 +82,7 @@ class Users extends Controller
         // --------------------------------
 
         // Specify logic here if applicable ---
-        $exists = $this->depot->exists($input);
+        $exists = $this->repo->exists($input);
 
         $data = array();
 
@@ -106,7 +106,7 @@ class Users extends Controller
         // ------------------------------------
 
         // Create the user then go back to "index" page ---
-        $this->depot->create($input);
+        $this->repo->create($input, new User);
 
         $text = (string) 'User successfully created!';
 
@@ -127,7 +127,7 @@ class Users extends Controller
     public function edit($id)
     {
         // Show 404 page if user not found ---
-        if (! $item = $this->depot->find($id))
+        if (! $item = $this->repo->find($id))
         {
             show_404();
         }
@@ -160,7 +160,7 @@ class Users extends Controller
         // -------------------------------------------
 
         // Specify logic here if applicable ---
-        $exists = $this->depot->exists($input, $id);
+        $exists = $this->repo->exists($input, $id);
 
         if ($exists)
         {
@@ -183,7 +183,7 @@ class Users extends Controller
 
         // Update the user then go back to "index" page ---
         /** @var \User $item */
-        $this->depot->update($item, $input);
+        $this->repo->update($item, $input);
 
         $text = (string) 'User successfully updated!';
 
@@ -205,7 +205,7 @@ class Users extends Controller
         // Show 404 page if not using "DELETE" method ---
         $method = $this->input->post('_method', true);
 
-        $item = $this->depot->find($id);
+        $item = $this->repo->find($id);
 
         if ($method !== 'DELETE' || ! $item)
         {
@@ -215,7 +215,7 @@ class Users extends Controller
 
         // Delete the user then go back to "index" page ---
         /** @var \User $item */
-        $this->depot->delete($item);
+        $this->repo->delete($item);
 
         $text = (string) 'User successfully deleted!';
 
@@ -233,7 +233,7 @@ class Users extends Controller
     public function index()
     {
         // Create pagination links and get the offset ---
-        $total = (int) $this->depot->total();
+        $total = (int) $this->repo->total();
 
         $result = $this->user->paginate(10, $total);
 
@@ -243,7 +243,7 @@ class Users extends Controller
         $offset = $result[0];
         // ----------------------------------------------
 
-        $items = $this->depot->get(10, $offset);
+        $items = $this->repo->get(10, $offset);
 
         $data['items'] = $items;
 
