@@ -6,6 +6,7 @@ use Rougin\Wildfire\Model;
 use Rougin\Wildfire\Traits\PaginateTrait;
 use Rougin\Wildfire\Traits\ValidateTrait;
 use Rougin\Wildfire\Traits\WildfireTrait;
+use Rougin\Wildfire\Traits\WritableTrait;
 
 /**
  * @property \CI_DB_query_builder $db
@@ -15,6 +16,7 @@ class User extends Model
     use PaginateTrait;
     use ValidateTrait;
     use WildfireTrait;
+    use WritableTrait;
 
     /**
      * Additional configuration to Pagination Class.
@@ -31,8 +33,7 @@ class User extends Model
     );
 
     /**
-     * An array of validation rules. This needs to be the same format
-     * as validation rules passed to the Form Validation library.
+     * List of validation rules.
      *
      * @link https://codeigniter.com/userguide3/libraries/form_validation.html#setting-rules-using-an-array
      *
@@ -49,46 +50,6 @@ class User extends Model
      * @var string
      */
     protected $table = 'users';
-
-    /**
-     * Allows updating of timestamp fields ("created_at", "updated_at").
-     *
-     * @var boolean
-     */
-    protected $timestamps = true;
-
-    /**
-     * @param array<string, mixed> $data
-     *
-     * @return boolean
-     */
-    public function create($data)
-    {
-        $input = $this->input($data);
-
-        if ($this->timestamps)
-        {
-            $input['created_at'] = date('Y-m-d H:i:s');
-        }
-
-        $table = $this->table;
-
-        return $this->db->insert($table, $input);
-    }
-
-    /**
-     * @param integer $id
-     *
-     * @return boolean
-     */
-    public function delete($id)
-    {
-        $this->db->where($this->primary, $id);
-
-        $result = $this->db->delete($this->table);
-
-        return $result ? true : false;
-    }
 
     /**
      * @param array<string, mixed> $data
@@ -112,34 +73,6 @@ class User extends Model
         // ------------------------------------
 
         return $count > 0;
-    }
-
-    /**
-     * @return integer
-     */
-    public function total()
-    {
-        return $this->db->from($this->table)->count_all_results();
-    }
-
-    /**
-     * @param integer              $id
-     * @param array<string, mixed> $data
-     *
-     * @return boolean
-     */
-    public function update($id, $data)
-    {
-        $input = $this->input($data, $id);
-
-        if ($this->timestamps)
-        {
-            $input['updated_at'] = date('Y-m-d H:i:s');
-        }
-
-        $this->db->where($this->primary, $id);
-
-        return $this->db->update($this->table, $input);
     }
 
     /**
