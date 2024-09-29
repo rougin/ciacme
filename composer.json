@@ -13,7 +13,6 @@
 	"require": {
 		"php": ">=5.3.7",
 		"rougin/credo": "dev-master",
-		"rougin/spark-plug": "dev-master",
 		"rougin/wildfire": "dev-master"
 	},
 	"suggest": {
