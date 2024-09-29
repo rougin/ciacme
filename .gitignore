@@ -4,6 +4,9 @@ application/cache/*
 !application/cache/index.html
 
 application/config/database.php
+application/models
+application/views
+application/controllers
 
 application/logs/*
 !application/logs/index.html
