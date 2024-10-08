@@ -3,10 +3,10 @@
 application/cache/*
 !application/cache/index.html
 
-application/config/database.php
-application/models
-application/views
 application/controllers
+application/models
+application/repositories
+application/views
 
 application/logs/*
 !application/logs/index.html
